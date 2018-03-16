@@ -1,0 +1,9 @@
+{
+    "appName": "<%= appName %>",
+    "appTitle": "<%= appDescription %>",
+    "appDescription": "<%= appDescription %>",
+    "appVersion": "<%= appVersion %>",
+    "appAuthor": "<%= appAuthor %>",
+    "appComponentsPath": "<%= appComponentsPath %>",
+    "appPagesPath": "<%= appPagesPath %>"
+}

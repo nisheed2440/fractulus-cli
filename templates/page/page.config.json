@@ -1,0 +1,6 @@
+{
+    "label": "<%= pageName %>",
+    "context": {
+        "message": "<%= pageName %>"
+    }
+}

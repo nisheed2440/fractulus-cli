@@ -1,0 +1,3 @@
+# <%= componentDirName %> Component
+
+<%= componentDesc %>

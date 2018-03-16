@@ -1,0 +1,8 @@
+{
+    "title": "<%= componentDirName %>",
+    "status": "ready",
+    "context": {
+        "message": "<%= componentDesc %>"
+    },
+    "variants": []
+}

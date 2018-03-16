@@ -1,0 +1,27 @@
+{
+  "name": "<%= componentDirName %>",
+  "version": "1.0.0",
+  "description": "<%= componentDesc %>",
+  "main": "<%= componentDirName %>.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "rollup": {
+    "inputOptions": {
+      "external": [
+        "jquery",
+        "stimulus"
+      ]
+    },
+    "outputOptions": {
+      "name": "<%= componentCtrlName %>",
+      "globals": {
+        "jquery": "$",
+        "stimulus": "Stimulus"
+      }
+    }
+  }
+}
