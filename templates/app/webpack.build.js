@@ -78,17 +78,21 @@ function fractalStart(deployable = false) {
         favicon: '/assets/icons/favicon.ico',
         nav: ['docs', 'components'],
         lang: 'en-US',
-        styles: ['default'],
-        scripts: ['default'],
+        styles: ['default', '/theme/styles.css'],
+        scripts: ['default', '/theme/scripts.js'],
         static: {
             mount: 'theme'
         }
     });
 
+    // specify a directory to hold the theme override templates
+    mandelbrot.addLoadPath(__dirname + '/dist/theme'); 
+
     /* Set the title of the project */
     fractal.set('project.title', `<%= appTitle %>`);
     fractal.set('project.version', `<%= appVersion %>`);
     fractal.set('project.author', `<%= appAuthor %>`);
+    fractal.set('project.footer', `&copy; ${(new Date()).getFullYear()} <%= appTitle %>`);
 
     /* Tell Fractal where the components will live */
     fractal.components.set('path', __dirname + '/dist/components');

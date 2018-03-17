@@ -1,0 +1,4 @@
+{% include 'partials/scripts.nunj' %}
+<footer class="Footer-text">
+    {{frctl.get('project.footer') | default('&copy; 2018') | safe}}
+</footer>

@@ -1,0 +1,28 @@
+/* Theme Styles goes here*/
+
+.Frame{
+    height: calc(100vh - 30px);
+}
+
+.Footer-text{
+    height: 30px;
+    line-height: 30px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+    padding: 0 1rem;
+    font-size: 0.75em;
+    text-align: center;
+}
+
+
+.Header-version{
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 0.875em;
+    font-family: monospace;
+}

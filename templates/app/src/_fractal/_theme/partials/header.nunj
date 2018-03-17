@@ -1,0 +1,8 @@
+<div class="Header">
+    <button class="Header-button Header-navToggle" data-action="toggle-sidebar">
+        {% include 'icons/close-nav.svg' %}
+        {% include 'icons/open-nav.svg' %}
+    </button>
+    <a href="{{ path('/') }}" class="Header-title" data-pjax>{{ frctl.get('project.title') | default('Component Library') }}</a>
+    <div class="Header-title Header-version">ver {{frctl.get('project.version') | default('0.0.1')}}</div>
+</div>

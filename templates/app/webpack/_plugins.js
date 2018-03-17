@@ -70,6 +70,9 @@ function getAppWebpackPlugins({
         }, {
             from: `src/_fractal/_preview-templates`,
             to: `./components/_preview-templates`
+        }, {
+            from: `src/_fractal/_theme`,
+            to: `./theme`
         }])
     ];
     if (global.FTL_PROD === true) {
