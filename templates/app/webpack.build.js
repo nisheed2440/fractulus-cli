@@ -45,6 +45,7 @@ async function build(deployable = false) {
     });
     // Clean up the dist folder
     await utils.cleanUp(['./dist', './build']);
+    // Build fractal application
     // Build all the webpack configs
     await Promise.all(webpackConfigs).then(() => {
         // Write partials file for the fractal build

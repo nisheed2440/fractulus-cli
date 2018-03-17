@@ -15,7 +15,7 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const slash = require('slash');
 
-class HBF {
+class FractulusCLI {
     constructor() {
         /** Private Variables */
         this._root = __dirname;
@@ -109,18 +109,18 @@ class HBF {
     _inquireVersion() {
         this.program
             .version(this.pkg.version, '-v, --version')
-            .description('HBF - Handlebars Fractal CLI Tool');
+            .description('FractulusCLI - Handlebars Fractal CLI Tool');
     }
     _inquireNewPage() {
         this.program
             .command('create-page <pName>')
             .alias('cp')
-            .description(chalk.yellow('Create new HBF page'))
+            .description(chalk.yellow('Create new fractal page'))
             .action((pName) => {
                 this._pageData.pageName = pName;
                 this._pageData.pageDirName = this.getDirName(pName);
-                // Validate the existance of .hbf-cli.json file
-                if (this.isValidHBFApp()) {
+                // Validate the existance of .fractulus-cli.json file
+                if (this.isValidFractulusApp()) {
                     try {
                         // Get the appPagesPath
                         const configData = this.fs.readJSON(this.getConfigPath());
@@ -132,11 +132,11 @@ class HBF {
                             this._copyPageTpl(`./page.hbs`, `${pageFilePath}.hbs`, pageData);
                             this._copyPageTpl(`./page.config.json`, `${pageFilePath}.config.json`, pageData);
                             this.fs.commit(() => {
-                                console.log(chalk.blue(`INFO! -> Page created under ${pageDirPath}`));
+                                this.logger('success', `Page created under ${pageDirPath}`);
                             });
                         }
                     } catch (err) {
-                        console.log(chalk.red('ERROR! ->', err));
+                        this.logger('error', err);
                         process.exit(1);
                     }
                 }
@@ -147,13 +147,13 @@ class HBF {
             .command('create-component <cName>')
             .option('-s, --skip-test', 'Skip installing spec file')
             .alias('cc')
-            .description(chalk.yellow('Create new HBF component'))
+            .description(chalk.yellow('Create new fractal component'))
             .action((cName, cmd) => {
                 this._cmpData.componentName = cName;
                 this._cmpData.componentDirName = this.getDirName(cName);
                 this._cmpData.componentCtrlName = this.getCtrlName(cName, '', 'Controller');
-                // Validate the existance of .hbf-cli.json file
-                if (this.isValidHBFApp()) {
+                // Validate the existance of .fractulus-cli.json file
+                if (this.isValidFractulusApp()) {
                     try {
                         // Get the appComponentsPath
                         const configData = this.fs.readJSON(this.getConfigPath());
@@ -175,12 +175,12 @@ class HBF {
                                     this._copyCmpTpl(`./package.json`, `${componentDirPath}/package.json`, cmpData);
                                     this._copyCmpTpl(`./README.md`, `${componentDirPath}/README.md`, cmpData);
                                     this.fs.commit(() => {
-                                        console.log(chalk.blue(`INFO! -> Component created under ${componentDirPath}`));
+                                        this.logger('success', `Component created under ${componentDirPath}`);
                                     });
                                 });
                         }
                     } catch (err) {
-                        console.log(chalk.red('ERROR! ->', err));
+                        this.logger('error', err);
                         process.exit(1);
                     }
                 }
@@ -191,14 +191,14 @@ class HBF {
             .command('new <appName>')
             .option('-s, --skip-install', 'Skip installing packages')
             .alias('n')
-            .description(chalk.yellow('Create new HBF application'))
+            .description(chalk.yellow('Create new fractal application'))
             .action((appName, cmd) => {
 
                 this._appData.appName = this._.kebabCase(appName);
                 this._appData.appVersion = this.pkg.version;
 
                 if (!this.nfs.existsSync(path.resolve(process.cwd(), this._appData.appName))) {
-                    console.log(`Package Name: ${chalk.yellow(appName)}`);
+                    this.logger('info', `Package Name: ${chalk.yellow(appName)}`)
                     this.inquirer
                         .prompt(this._setAppPrompts())
                         .then(async (answers) => {
@@ -210,22 +210,22 @@ class HBF {
                             await this._createAppFolder();
                             this._copyAppTpl('./', './', this._appData);
                             this.fs.commit(() => {
-                                console.log(chalk.blue(`INFO! -> Application created under ${this._destRootFolder}`));
+                                this.logger('success', `Application created under ${this._destRootFolder}`);
                                 // Skip npm install
                                 if (!cmd.skipInstall) {
                                     try {
                                         process.chdir(this._destRootFolder);
-                                        console.log(chalk.yellow('ATTENTION! -> Running NPM install'));
-                                        console.log(chalk.grey('This might take a while...'));
+                                        this.logger('warn', 'Running NPM install');
+                                        this.logger(null, 'This might take a while...');
                                         this.execAsync('npm install');
                                     } catch (err) {
-                                        console.log(chalk.red('ERROR! -> chdir: ' + err));
+                                        this.logger('error', 'chdir: ' + err);
                                     }
                                 }
                             });
                         });
                 } else {
-                    console.log(chalk.red('ERROR! -> Application/Folder with a similar name already exists in the current working directory!'));
+                    this.logger('error', 'Application/Folder with a similar name already exists in the current working directory!');
                     process.exit(1);
                 }
             });
@@ -237,31 +237,31 @@ class HBF {
             .option('-w, --watch', 'Watch for file changes')
             .option('-s, --source-map', 'Create source maps')
             .action((cmd) => {
-                if(this.isValidHBFApp() && this.fs.exists(this.getWebpackPath())) {
+                if (this.isValidFractulusApp() && this.fs.exists(this.getWebpackPath())) {
                     try {
                         const builder = require(this.getWebpackPath());
                         builder();
                     } catch (err) {
-                        console.log(chalk.red('ERROR! -> ' + err));
+                        this.logger('error', err);
                     }
                 }
             });
     }
     _executeDeploy() {
         this.program
-        .command('build')
-        .option('-p, --prod', 'Create prod version')
-        .option('-s, --source-map', 'Create source maps')
-        .action((cmd) => {
-            if(this.isValidHBFApp() && this.fs.exists(this.getWebpackPath())) {
-                try {
-                    const builder = require(this.getWebpackPath());
-                    builder(true);
-                } catch (err) {
-                    console.log(chalk.red('ERROR! -> ' + err));
+            .command('build')
+            .option('-p, --prod', 'Create prod version')
+            .option('-s, --source-map', 'Create source maps')
+            .action((cmd) => {
+                if (this.isValidFractulusApp() && this.fs.exists(this.getWebpackPath())) {
+                    try {
+                        const builder = require(this.getWebpackPath());
+                        builder(true);
+                    } catch (err) {
+                        this.logger('error', err);                        
+                    }
                 }
-            }
-        });
+            });
     }
     getCtrlName(name, prefix = '', postfix = '') {
         return `${prefix}${this._.startCase(this._.camelCase(name)).split(' ').join('')}${postfix}`;
@@ -296,22 +296,53 @@ class HBF {
         if (!this.nfs.existsSync(path.resolve(process.cwd(), cmpOrPagePath, cmpOrPageName))) {
             return true;
         }
-        console.log(chalk.red('ERROR! -> Folder with a similar name already exists in the current working directory!'));
+        this.logger('error', 'Folder with a similar name already exists in the current working directory!'); 
         process.exit(1);
 
     }
-    isValidHBFApp() {
+    isValidFractulusApp() {
         if (this.fs.exists(this.getConfigPath())) {
             return true;
         }
-        console.log(chalk.red('ERROR! -> Not a valid HBF application!'));
+        this.logger('error', 'Not a valid fractal application!');
         process.exit(1);
     }
     getConfigPath() {
-        return path.resolve(process.cwd(), './.hbf-cli.json');
+        return path.resolve(process.cwd(), './.fractulus-cli.json');
     }
     getWebpackPath() {
         return path.resolve(process.cwd(), './webpack.build.js');
     }
+    logger(type, msg) {
+        let chalkColor;
+        let icon = '';
+        let prefix = '';
+        switch (type) {
+            case 'error':
+                chalkColor = chalk.red;
+                icon = '\u2718';
+                prefix = 'ERROR ->';
+                break;
+            case 'success':
+                chalkColor = chalk.green;
+                icon = '\u2714';
+                prefix = 'SUCCESS ->';
+                break;
+            case 'info':
+                chalkColor = chalk.blueBright;
+                icon = '\u2794';
+                prefix = 'INFO ->';
+                break;
+            case 'warn':
+                chalkColor = chalk.yellow;
+                icon = '\u2757';
+                prefix = 'WARNING ->';
+                break;
+            default:
+                chalkColor = chalk.grey;
+                break;
+        }
+        console.log(chalkColor(`${icon} ${prefix} ${msg}`));
+    }
 }
-module.exports = (new HBF()).init();
+module.exports = (new FractulusCLI()).init();

@@ -11,6 +11,7 @@ const del = require('del');
 const concat = require('concat');
 const rules = require('./_rules');
 const plugins = require('./_plugins');
+const chalk = require('chalk');
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -39,8 +40,12 @@ function outputComponentData(configs) {
     configs.forEach(config => {
         table.push([config.componentName, config.componentCtrl]);
     });
-    // Output the tabular data
-    console.log(table.toString());
+    if (configs.length) {
+        // Output the tabular data
+        console.log(table.toString());
+    } else {
+        console.log(chalk.red(`(\u2718) No fractal components found!`));
+    }
 }
 /**
  * Function to retrieve all the partials associated with a component and add it to 
