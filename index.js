@@ -35,7 +35,7 @@ class FractulusCLI extends Utils {
         }];
         return this.appPrompts;
     }
-     /**
+    /**
      * Function to set the components prompts array which will be used by the inquirer API
      * @returns {object[]} The prompts array
      */
@@ -67,7 +67,7 @@ class FractulusCLI extends Utils {
             .action((pName) => {
                 this.pageData.pageName = pName;
                 this.pageData.pageDirName = this.getDirName(pName);
-               
+
                 // Validate the existance of .fractulus-cli.json file
                 if (this.isValidFractulusApp()) {
                     try {
@@ -144,7 +144,7 @@ class FractulusCLI extends Utils {
             .alias('n')
             .description(this.chalk.yellow('Create new fractal application'))
             .action((appName, cmd) => {
-
+                const appRoot = process.cwd();
                 this.appData.appName = this._.kebabCase(appName);
                 this.appData.appVersion = '0.0.1';
 
@@ -153,14 +153,14 @@ class FractulusCLI extends Utils {
                     this.inquirer
                         .prompt(this.setAppPrompts())
                         .then(async (answers) => {
-                            const dest = this.setDestRootFolder(this.appData.appName);
+                            const dest = this.path.join(appRoot, this.appData.appName);
                             this.appData = Object.assign({}, this.appData, { ...answers
                             }, {
                                 appComponentsPath: this.slash('./src/app/components'),
                                 appPagesPath: this.slash('./src/app/pages')
                             });
-                            await this.createAppFolder(this.appData.appName);
-                            this.copyAppTpl('./', './', this.appData);
+                            await this.createAppFolder(dest);
+                            this.copyAppTpl('./', dest, this.appData);
                             this.copyCommit(`Application created under ${dest}`, () => {
                                 // Skip npm install
                                 if (!cmd.skipInstall) {
