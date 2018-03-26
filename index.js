@@ -146,7 +146,7 @@ class FractulusCLI extends Utils {
             .action((appName, cmd) => {
 
                 this.appData.appName = this._.kebabCase(appName);
-                this.appData.appVersion = this.pkg.version;
+                this.appData.appVersion = '0.0.1';
 
                 if (this.isNewApp(this.appData.appName)) {
                     this.logger('info', `Package Name: ${this.chalk.yellow(this.appData.appName)}`)
