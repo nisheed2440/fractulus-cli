@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 const Utils = require('./lib/utils');
-
+/** Class representing all the CLI prompts */
 class FractulusCLI extends Utils {
+    /** Constructor function for the class */
     constructor() {
         super();
         this.appPrompts = [];
@@ -11,6 +12,10 @@ class FractulusCLI extends Utils {
         this.cmpData = {};
         this.pageData = {};
     }
+    /**
+     * Function to set the app prompts array which will be used by the inquirer API
+     * @returns {object[]} The prompts array
+     */
     setAppPrompts() {
         this.appPrompts = [{
             type: 'input',
@@ -30,6 +35,10 @@ class FractulusCLI extends Utils {
         }];
         return this.appPrompts;
     }
+     /**
+     * Function to set the components prompts array which will be used by the inquirer API
+     * @returns {object[]} The prompts array
+     */
     setComponentPrompts(cmpName) {
         this.cmpPrompts = [{
             type: 'input',
@@ -39,11 +48,17 @@ class FractulusCLI extends Utils {
         }];
         return this.cmpPrompts;
     }
+    /**
+     * Function to add version to the inquirer API
+     */
     _inquireVersion() {
         this.program
             .version(this.pkg.version, '-v, --version')
-            .description('FractulusCLI - Handlebars Fractal CLI Tool');
+            .description('Fractulus CLI - Handlebars Fractal CLI Tool');
     }
+    /**
+     * Function to add `create page` functionality to the inquirer API
+     */
     _inquireNewPage() {
         this.program
             .command('create-page <pName>')
@@ -74,6 +89,9 @@ class FractulusCLI extends Utils {
                 }
             });
     }
+    /**
+     * Function to add `create component` functionality to the inquirer API
+     */
     _inquireNewComponent() {
         this.program
             .command('create-component <cName>')
@@ -116,6 +134,9 @@ class FractulusCLI extends Utils {
                 }
             });
     }
+    /**
+     * Function to add `create app` functionality to the inquirer API
+     */
     _inquireNewApp() {
         this.program
             .command('new <appName>')
@@ -159,6 +180,9 @@ class FractulusCLI extends Utils {
                 }
             });
     }
+    /**
+     * Function to add `webpack build and local serve` functionality to the inquirer API
+     */
     _executeServe() {
         this.program
             .command('serve')
@@ -176,6 +200,9 @@ class FractulusCLI extends Utils {
                 }
             });
     }
+    /**
+     * Function to add `webpack build and fractal build` functionality to the inquirer API
+     */
     _executeDeploy() {
         this.program
             .command('build')
@@ -192,16 +219,19 @@ class FractulusCLI extends Utils {
                 }
             });
     }
+    /** Function to add the build/deployments commands to the inquirer API */
     execute() {
         this._executeServe();
         this._executeDeploy();
     }
+    /** Function to add the CLI input commands to the inquirer API */
     inquire() {
         this._inquireVersion();
         this._inquireNewApp();
         this._inquireNewComponent();
         this._inquireNewPage();
     }
+    /** Initialization function */
     init() {
         this.setCliRootFolder(__dirname);
         this.setTemplatePaths();
